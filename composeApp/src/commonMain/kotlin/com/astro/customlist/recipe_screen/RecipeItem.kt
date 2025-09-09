@@ -43,12 +43,13 @@ fun RecipeItem(recipe: Recipe, onClick: (() -> Unit)? = null) {
         Row(modifier = Modifier.padding(12.dp)) {
 
             // Recipe Image
+            println("IMAGE URL -> ${recipe.imageUrl}")
             AsyncImage(
                 model = recipe.imageUrl,
                 contentDescription = recipe.name,
                 modifier = Modifier
                     .size(80.dp)
-                    .clip(RoundedCornerShape(12.dp)),
+                    .clip(RoundedCornerShape(10.dp)),
                 contentScale = ContentScale.Crop
             )
 

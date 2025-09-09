@@ -1,5 +1,10 @@
 package com.astro.customlist.core_klist
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -11,9 +16,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
 
 
 class KList private constructor() {
@@ -49,21 +65,25 @@ class KList private constructor() {
         return this
     }
 
+    // For Click on Any item
     fun clickable(onClick: () -> Unit): KList {
         this.onClick = onClick
         return this
     }
 
+    // For Empty State to Handle on Empty Product
     fun emptyState(content: @Composable () -> Unit): KList {
         this.emptyState = content
         return this
     }
 
+    //For Animate Items
     fun animateItems(): KList {
         this.isAnimationEnabled = true
         return this
     }
 
+    // For multiple items like Lazy column items
     fun <T> sections(sections: List<Section>): KList {
         sections.forEach { section ->
             // Safe cast like before
@@ -81,6 +101,7 @@ class KList private constructor() {
         return this
     }
 
+    // For Single Section
     fun <T> section(title: String? = null, list: List<T>, itemContent: @Composable (T) -> Unit): KList {
         val safeContent: @Composable (Any) -> Unit = { item ->
             itemContent(item as T)
@@ -114,19 +135,67 @@ class KList private constructor() {
                         }
                     }
 
-                    items(section.items) { item ->
-                        val itemModifier = if (isAnimationEnabled) {
-                            Modifier.animateItem(
-                                fadeInSpec = tween(300),   // item aane par fade-in
-                                fadeOutSpec = tween(300),  // item jaane par fade-out
-                                placementSpec = tween(300) // item position change hone par smooth transition
-                            )
-                        } else Modifier
-
-                        Box(modifier = itemModifier) {
-                            section.itemContent(item)
+                    if (section.items.isEmpty()) {
+                        item {
+                            emptyState?.invoke() ?: Text("Nothing to show")
                         }
                     }
+
+                    itemsIndexed(section.items, key = { _, item -> item.hashCode() }) { index, item ->
+                        var visible by remember { mutableStateOf(false) }
+
+                        // Delay item for animation
+                        LaunchedEffect(Unit) {
+                            delay(index * 150L)
+                            visible = true
+                        }
+
+                        AnimatedVisibility(
+                            visible = visible,
+                            enter = slideInVertically(
+                                initialOffsetY = { it / 2 }, //
+                                animationSpec = spring(
+                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                    stiffness = Spring.StiffnessLow
+                                )
+                            ) + fadeIn(
+                                animationSpec = tween(
+                                    durationMillis = 600,
+                                    easing = LinearOutSlowInEasing
+                                )
+                            ),
+                            exit = fadeOut(
+                                animationSpec = tween(
+                                    durationMillis = 400,
+                                    easing = FastOutLinearInEasing
+                                )
+                            )
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 6.dp)
+                            ) {
+                                section.itemContent(item)
+                            }
+                        }
+                    }
+//                    items(
+//                        items = section.items,
+//                        key = { item -> item.hashCode() }
+//                    ) { item ->
+//                        val itemModifier = if (isAnimationEnabled) {
+//                            Modifier.animateItem(
+//                                fadeInSpec = tween(300),
+//                                fadeOutSpec = tween(300),
+//                                placementSpec = tween(300)
+//                            )
+//                        } else Modifier
+//
+//                        Box(modifier = itemModifier) {
+//                            section.itemContent(item)
+//                        }
+//                    }
 
                     item {
                         if (isDividerEnabled) {

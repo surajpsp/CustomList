@@ -1,4 +1,46 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+# 🍴 Recipe App with Custom KList DSL
+
+This project demonstrates how to build a **custom Kotlin DSL** for handling complex lists in Jetpack Compose.  
+We designed a class called **`KList`** that behaves like a builder for lists, allowing developers to write clean, expressive, and reusable UI code.
+
+---
+
+## 🚀 Features
+- **Kotlin DSL** based list builder (`KList`).
+- Supports **single section** as well as **multiple sections**.
+- Built-in support for:
+  - Padding
+  - Dividers
+  - Click handling
+  - Empty state UI
+  - Smooth staggered animations (items appear one by one).
+- Section-wise Recipe example (**Lunch, Dinner, Dessert, Drinks**).
+- Uses **Material 3** components.
+- Ready to extend (e.g., adding images inside items).
+
+---
+
+## 🛠️ What is Kotlin DSL?
+
+DSL (Domain Specific Language) in Kotlin allows us to design APIs that look like natural language.  
+Instead of boilerplate list setup, we describe what we want in a **fluent style**.
+
+👉 Example of DSL style:
+
+```kotlin
+KList.instance
+    .padding(16.dp)
+    .divider()
+    .animateItems()
+    .section("🍱 Lunch Specials", lunchRecipes) { RecipeItem(it) }
+    .section("🍲 Dinner Delights", dinnerRecipes) { RecipeItem(it) }
+    .section("🍰 Desserts", dessertRecipes) { RecipeItem(it) }
+    .section("🥤 Drinks", drinksRecipes) { RecipeItem(it) }
+    .emptyState { Text("No recipes found 🍳") }
+    .render()
+
+
+#This is a Kotlin Multiplatform project targeting Android, iOS.
 
 * [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
   It contains several subfolders:
