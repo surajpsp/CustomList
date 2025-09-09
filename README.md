@@ -3,6 +3,8 @@
 This project demonstrates how to build a **custom Kotlin DSL** for handling complex lists in Jetpack Compose.  
 We designed a class called **`KList`** that behaves like a builder for lists, allowing developers to write clean, expressive, and reusable UI code.
 
+<img width="2000" height="1400" alt="image" src="https://github.com/user-attachments/assets/1e982857-dbbc-43b2-8a85-956bdb78dfa0" />
+
 ---
 
 ## 🚀 Features
